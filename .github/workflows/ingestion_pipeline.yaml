@@ -37,7 +37,7 @@ jobs:
             --source ./src/core \
             --region europe-west1 \
             --trigger-event-filters providers/cloud.storage/eventTypes/object.finalize \
-            --trigger-event-filters projects/_/buckets/eam-meetings/objects/*.docx
+            --trigger-resource projects/_/buckets/eam-meetings/objects/*.docx
        
 
       # - name: Deploy Cloud Function
