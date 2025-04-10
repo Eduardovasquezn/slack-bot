@@ -35,7 +35,7 @@ jobs:
             --runtime python313 \
             --entry-point data_ingestion \
             --source ./src/core \
-            --region eu-west1 
+            --region europe-west1
        
 
       # - name: Deploy Cloud Function
