@@ -27,17 +27,27 @@ jobs:
 
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
- 
+
       - name: Deploy Cloud Function
-        id: deploy
-        uses: google-github-actions/deploy-cloud-functions@v2
-        with:
-          name: data-ingestion
-          runtime: python313
-          source: ./src/core
-          entry_point: data_ingestion.py
-          event_trigger_type: providers/cloud.storage/eventTypes/object.finalize
-          event_trigger_resource: projects/_/buckets/eam-meetings/objects/*.docx
+        run: |
+          gcloud functions deploy data-ingestion \
+            --gen2 \
+            --runtime python313 \
+            --entry-point data_ingestion \
+            --source ./src/core \
+            --region eu-west1 
+       
+
+      # - name: Deploy Cloud Function
+      #   id: deploy
+      #   uses: google-github-actions/deploy-cloud-functions@v2
+      #   with:
+      #     name: data-ingestion
+      #     runtime: python313
+      #     source: ./src/core
+      #     entry_point: data_ingestion.py
+      #     event_trigger_type: providers/cloud.storage/eventTypes/object.finalize
+      #     event_trigger_resource: projects/_/buckets/eam-meetings/objects/*.docx
 
       - name: make the url aunthenticated
         run: |
