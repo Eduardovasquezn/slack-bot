@@ -35,7 +35,9 @@ jobs:
             --runtime python312 \
             --entry-point data_ingestion \
             --source ./src/core \
-            --region europe-west1
+            --region europe-west1 \
+            --trigger-event providers/cloud.storage/eventTypes/object.finalize \
+            --trigger-resource projects/_/buckets/eam-meetings/objects/*.docx
        
 
       # - name: Deploy Cloud Function
