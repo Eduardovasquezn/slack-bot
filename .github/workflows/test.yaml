@@ -17,4 +17,4 @@ jobs:
       run: |
         echo "SET_VARS secret: $SET_VARS"  # Debugging step to see if the secret is loaded
       env:
-        SET_VARS: ${{ secrets.SET_VARS }}  # Access the set_Vars secret
+        SET_VARS: ${{ secrets.SET_VARS }}  # Access the set_Vars secret 
