@@ -8,12 +8,15 @@ jobs:
   run_script:
     runs-on: ubuntu-latest  # Using an Ubuntu runner
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Debug Print the secret value before saving to file
-      run: |
-        echo "SET_VARS secret: $SET_VARS"  # Debugging step to see if the secret is loaded
-      env:
-        SET_VARS: ${{ secrets.SET_VARS }}  # Access the set_Vars secret 
+steps:
+  - uses: actions/checkout@v4
+  
+  # Decode .env file (creates it in runner's workspace)
+  - name: Create .env file
+    run: echo "${{ secrets.SET_VARS }}" | base64 --decode > .env
+  
+  # Verify it worked (optional)
+  - name: Check .env contents
+    run: |
+      echo "Decoded .env file:"
+      cat .env | grep -v '_KEY='  # Avoid printing secrets in logs
