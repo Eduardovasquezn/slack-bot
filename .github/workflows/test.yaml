@@ -12,7 +12,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Debug: Print the secret value before saving to file
+    - name: Debug Print the secret value before saving to file
       run: |
         echo "SET_VARS secret: $SET_VARS"  # Debugging step to see if the secret is loaded
       env:
