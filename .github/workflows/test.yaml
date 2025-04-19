@@ -2,8 +2,7 @@ name: Run Shell Script
 
 on:
   push:
-    branches:
-      - main  # Trigger the action on a push to the main branch (adjust as needed)
+    branches: [ main ]
  
 jobs:
   run_script:
