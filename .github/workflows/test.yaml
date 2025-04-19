@@ -14,5 +14,5 @@ jobs:
       # Decode .env file (creates it in runner's workspace)
       - name: Create .env file
         run: echo "${{ secrets.SET_VARS1 }}" | base64 --decode > .env
-             echo "QDRANT_URL=$QDRANT_URL"
+             echo QDRANT_URL="$QDRANT_URL"
  
