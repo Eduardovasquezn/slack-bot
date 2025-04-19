@@ -8,15 +8,15 @@ jobs:
   run_script:
     runs-on: ubuntu-latest  # Using an Ubuntu runner
 
-steps:
-  - uses: actions/checkout@v4
-  
-  # Decode .env file (creates it in runner's workspace)
-  - name: Create .env file
-    run: echo "${{ secrets.SET_VARS }}" | base64 --decode > .env
-  
-  # Verify it worked (optional)
-  - name: Check .env contents
-    run: |
-      echo "Decoded .env file:"
-      cat .env | grep -v '_KEY='  # Avoid printing secrets in logs
+  steps:
+    - uses: actions/checkout@v4
+    
+    # Decode .env file (creates it in runner's workspace)
+    - name: Create .env file
+      run: echo "${{ secrets.SET_VARS }}" | base64 --decode > .env
+    
+    # Verify it worked (optional)
+    - name: Check .env contents
+      run: |
+        echo "Decoded .env file:"
+        cat .env | grep -v '_KEY='  # Avoid printing secrets in logs
