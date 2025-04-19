@@ -13,7 +13,7 @@ jobs:
       
       # Decode .env file (creates it in runner's workspace)
       - name: Create .env file
-        run: echo "${{ secrets.SET_VARS }}" | base64 --decode > .env
+        run: echo "${{ secrets.SET_VARS1 }}" | base64 --decode > .env
       
       # Verify it worked (optional)
       - name: Check .env contents
