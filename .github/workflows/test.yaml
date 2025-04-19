@@ -13,17 +13,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Extract and print variables from set_Vars secret
+    - name: Debug: Print the secret value before saving to file
       run: |
-        # Save the secret content into a file
-        echo "$SET_VARS" > .env
-        
-        # Extract individual variables
-        REDIS_PORT=$(grep -m 1 '^REDIS_PORT=' .env | cut -d '=' -f2)
-        REDIS_USERNAME=$(grep -m 1 '^REDIS_USERNAME=' .env | cut -d '=' -f2)
-        VAR_1=$(grep -m 1 '^VAR_1=' .env | cut -d '=' -f2)
-
-        # Print the values to verify extraction
-        echo "REDIS_PORT: $REDIS_PORT"
-        echo "REDIS_USERNAME: $REDIS_USERNAME"
-        echo "VAR_1: $VAR_1"
+        echo "SET_VARS secret: $SET_VARS"  # Debugging step to see if the secret is loaded
+      env:
+        SET_VARS: ${{ secrets.set_Vars }}  # Access the set_Vars secret
