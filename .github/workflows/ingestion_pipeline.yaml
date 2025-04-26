@@ -29,6 +29,8 @@ jobs:
 
       - name: Deploy Cloud Functions
         run: |
+          gcloud auth list
+
           gcloud functions deploy data-ingestion \
           --gen2 \
           --runtime python312 \
