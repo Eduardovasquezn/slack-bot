@@ -70,7 +70,7 @@ jobs:
           gcloud run deploy ${{ env.SERVICE }} \
           --image ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
           --service-account=cloud-run-sa@slack-bot-tf.iam.gserviceaccount.com \
-          --region ${{ env.REGION }} \
+          --region ${{ env.GAR_LOCATION }} \
           --update-secrets=OPENAI_API_KEY=OPENAI_API_KEY:1 \
           --update-secrets=QDRANT_API_KEY=QDRANT_API_KEY:1 \
           --update-secrets=QDRANT_URL=QDRANT_URL:1 \
