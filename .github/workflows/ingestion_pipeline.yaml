@@ -56,7 +56,7 @@ jobs:
           --update-secrets=REDIS_PASSWORD=REDIS_PASSWORD:1 \
           --set-env-vars QDRANT_COLLECTION_NAME=meetings \
           --set-env-vars ENVIRONMENT=production \
-          --set-env-vars BUCKET_NAME=team-meeting-files \ # pragma: allowlist secret
+          --set-env-vars BUCKET_NAME=team-meeting-files
 
       - name: Build and Push Container
         run: |-
