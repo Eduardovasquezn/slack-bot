@@ -1,0 +1,93 @@
+name: Deploy Cloud Function
+on:
+  push:
+    branches: [ main ]
+env:
+  PROJECT_ID: '${{ vars.PROJECT_ID }}'
+  GAR_LOCATION: '${{ vars.GAR_LOCATION }}'
+  IMAGE_NAME: '${{ vars.IMAGE_NAME }}'
+  ARTIFACT_REGISTRY: '${{ vars.ARTIFACT_REGISTRY }}'
+  SERVICE: '${{ vars.SERVICE }}'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Setup GCP Service Account
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
+
+      - name: Deploy Cloud Functions
+        run: |
+          gcloud functions deploy data-ingestion \
+          --gen2 \
+          --runtime python312 \
+          --entry-point=offline_pipeline \
+          --source=./src/ \
+          --region=europe-west1 \
+          --trigger-event-filters="type=google.cloud.storage.object.v1.finalized,bucket=team-meeting-files" \
+          --run-service-account=cloud-run-sa@slack-bot-tf.iam.gserviceaccount.com \
+          --trigger-service-account=cloud-run-sa@slack-bot-tf.iam.gserviceaccount.com \
+          --memory=4G \
+          --cpu=2 \
+          --update-secrets=OPENAI_API_KEY=OPENAI_API_KEY:1 \
+          --update-secrets=QDRANT_API_KEY=QDRANT_API_KEY:1 \
+          --update-secrets=QDRANT_URL=QDRANT_URL:1 \
+          --update-secrets=SLACK_BOT_TOKEN=SLACK_BOT_TOKEN:1 \
+          --update-secrets=SLACK_BOT_USER_ID=SLACK_BOT_USER_ID:1 \
+          --update-secrets=SLACK_SIGNING_SECRET=SLACK_SIGNING_SECRET:1 \
+          --update-secrets=LANGFUSE_PUBLIC_KEY=LANGFUSE_PUBLIC_KEY:1 \
+          --update-secrets=LANGFUSE_SECRET_KEY=LANGFUSE_SECRET_KEY:1 \
+          --update-secrets=LANGFUSE_HOST=LANGFUSE_HOST:1 \
+          --update-secrets=REDIS_HOST=REDIS_HOST:1 \
+          --update-secrets=REDIS_PORT=REDIS_PORT:1 \
+          --update-secrets=REDIS_USERNAME=REDIS_USERNAME:1 \
+          --update-secrets=REDIS_PASSWORD=REDIS_PASSWORD:1 \
+          --set-env-vars QDRANT_COLLECTION_NAME=meetings \
+          --set-env-vars ENVIRONMENT=production \
+          --set-env-vars BUCKET_NAME=team-meeting-files
+
+      - name: Build and Push Container
+        run: |-
+          gcloud auth configure-docker ${{ env.GAR_LOCATION }}-docker.pkg.dev
+          docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" ./
+          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
+      - name: Deploy to Cloud Run
+        run: |-
+          gcloud auth configure-docker ${{ env.GAR_LOCATION }}-docker.pkg.dev
+          gcloud run deploy ${{ env.SERVICE }} \
+          --image ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+          --service-account=cloud-run-sa@slack-bot-tf.iam.gserviceaccount.com \
+          --region ${{ env.GAR_LOCATION }} \
+          --update-secrets=OPENAI_API_KEY=OPENAI_API_KEY:1 \
+          --update-secrets=QDRANT_API_KEY=QDRANT_API_KEY:1 \
+          --update-secrets=QDRANT_URL=QDRANT_URL:1 \
+          --update-secrets=SLACK_BOT_TOKEN=SLACK_BOT_TOKEN:1 \
+          --update-secrets=SLACK_BOT_USER_ID=SLACK_BOT_USER_ID:1 \
+          --update-secrets=SLACK_SIGNING_SECRET=SLACK_SIGNING_SECRET:1 \
+          --update-secrets=LANGFUSE_PUBLIC_KEY=LANGFUSE_PUBLIC_KEY:1 \
+          --update-secrets=LANGFUSE_SECRET_KEY=LANGFUSE_SECRET_KEY:1 \
+          --update-secrets=LANGFUSE_HOST=LANGFUSE_HOST:1 \
+          --update-secrets=REDIS_HOST=REDIS_HOST:1 \
+          --update-secrets=REDIS_PORT=REDIS_PORT:1 \
+          --update-secrets=REDIS_USERNAME=REDIS_USERNAME:1 \
+          --update-secrets=REDIS_PASSWORD=REDIS_PASSWORD:1 \
+          --set-env-vars QDRANT_COLLECTION_NAME=meetings \
+          --set-env-vars ENVIRONMENT=production \
+          --set-env-vars BUCKET_NAME=team-meeting-files \
+            --memory=4G \
+            --cpu=2 \
+            --allow-unauthenticated  \
+            --platform managed
