@@ -62,3 +62,5 @@ crash.log
 
 # Credentials
 slack-bot-tf-f1aa92d0d876.json
+secrets_version.tf
+apis.tf

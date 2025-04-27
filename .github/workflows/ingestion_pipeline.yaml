@@ -91,6 +91,3 @@ jobs:
             --cpu=2 \
             --allow-unauthenticated  \
             --platform managed
-
-      - name: test the url
-        run: curl "${{ steps.deploy.outputs.url }}"
