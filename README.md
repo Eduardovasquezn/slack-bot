@@ -67,7 +67,7 @@ It uses Terraform for infrastructure setup, serverless event-driven architecture
 | Cloud Platform | Google Cloud Platform (GCP) |
 | Event-driven | Pub/Sub, Cloud Functions |
 | Database | Qdrant (vector store) |
-| Backend API | FastAPI |
+| Backend  | FastAPI |
 | LLM | OpenAI API (embeddings + chat completions) |
 | Monitoring | Langfuse |
 | Cache | Redis |
